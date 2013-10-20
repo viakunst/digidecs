@@ -1,0 +1,68 @@
+	<form role="form" action="index.php" method="post" enctype="multipart/form-data">
+		<div class="form-group">
+			<label for="name">Naam<sup>*</sup></label>
+			<input type="text" class="form-control" id="name" name="name" placeholder="Secretaris" required>
+		</div>
+
+		<div class="form-group">
+			<label for="email">Email adres<sup>*</sup></label>
+			<input type="email" class="form-control" id="email" name="email" placeholder="gigantischebaas@stickyutrecht.nl" required>
+		</div>
+
+		<div class="form-group">
+			<label for="city">Woonplaats<sup>*</sup></label>
+			<input id="city" type="text" class="form-control" name="city" placeholder="Utrecht" required>
+		</div>
+
+		<div class="form-group date">
+			<label for="date">Datum aankoop<sup>*</sup></label>
+			<div class="input-group date">
+				<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+				<input id="date" name="date"type="text" class="form-control datepicker" data-date-format="dd-mm-yyyy" readonly required><span class="add-on"><i class="icon-th"></i></span>
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label for="total-amount">Totaalbedrag<sup>*</sup></label>
+			<div class="input-group">
+				<span class="input-group-addon">&euro;</span>
+				<input id="total-amount" name="total-amount" type="text" class="form-control" placeholder="9999.00" required>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label for="description">Wat heb je gekocht?<sup>*</sup></label>
+			<input id="description" name="description" type="text" class="form-control" placeholder="Graafmachine" required>
+		</div>
+
+		<div class="form-group">
+			<label for="purpose">Waarvoor/welke commissie?<sup>*</sup></label>
+			<input id="purpose" name="purpose" type="text" class="form-control" placeholder="Bestuur, lul!" required>
+		</div>
+
+		<div class="form-group">
+			<label for="bank-account">Rekeningnummer/IBAN<sup>*</sup></label>
+			<input id="bank-account" name="bank-account" type="text" class="form-control" placeholder="12345678" required>
+		</div>
+
+		<div class="form-group">
+			<label for="ticket">Bonnetje uploaden<sup>*</sup></label>
+			<input type="hidden" name="MAX_FILE_SIZE" value="2097152">
+			<input name="ticket" type="file" id="ticket" required>
+			<p class="help-block">Maximale grootte is 2MB. Alleen .pdf, .jpg, .gif en .png bestanden.</p>
+		</div>
+
+		<div class="form-group">
+			<label for="remarks">Opmerkingen</label>
+			<textarea name="remarks" class="form-control" rows="3" type="textarea" id="remarks"></textarea>
+		</div>
+		
+		<div class="form-group">
+			<label for="accept-tos">
+				<input type="checkbox" name="accept-tos" id="accept-tos" required> Ik heb alles gecheckt en naar waarheid ingevuld<sup>*</sup>
+			</label>
+		</div>
+		<p>Velden met een <sup>*</sup> zijn verplicht</p>
+		<input type="submit" class="btn btn-default">
+	</form>
+</div>
