@@ -193,9 +193,8 @@ function alertMessage($string) {
 // with the ticket attached.
 function handleSubmit($post, $file) {
 	// Create new PHP mailer instance and
-	// configure the class for sending
-	// through science.uu.nl
-	$mail = new PHPMailer();
+  // configure it
+  $mail = new PHPMailer();
 	$mail->IsSMTP();
 	$mail->IsHTML(false);
 	$mail->AddAddress(EMAIL_TO_ADDRESS, EMAIL_TO_NAME);
