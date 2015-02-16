@@ -1,0 +1,12 @@
+body {
+	background: url('/img/bg.png');
+}
+#digidecs {
+	border: 1px #ccc solid;
+	background: #fdfdfd;
+	margin: 20px;
+	box-shadow: 0px 0px 15px #999;
+}
+sup {
+	color: red;
+}
