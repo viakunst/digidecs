@@ -15,7 +15,6 @@ Some technical details, for the interested:
  - Uses PHP and the Mailgun for mailing
  - Primitive form of templating.
  - Bootstrap as a CSS framework (yes, it's responsive).
- - Datepicker is [eternicode's fork of bootstrap-datepicker][bsdp]
 
 # Using this yourself:
 
