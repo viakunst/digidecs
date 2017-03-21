@@ -14,10 +14,10 @@ define('EMAIL_API_KEY', '');
 define('EMAIL_DOMAIN', 'something.org');
 
 // Define upload restrictions
-define('FILE_MAX_FILESIZE', 50000000);
+define('FILE_MAX_FILESIZE', 100000000);
 $allowed_filetypes  =
         array(
-	  	'jpg' => 'image/jpeg',
+				'jpg' => 'image/jpeg',
                 'png' => 'image/png',
                 'pdf' => 'application/pdf',
                 'pdf' => 'application/x-pdf'
