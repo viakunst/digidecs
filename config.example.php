@@ -1,7 +1,7 @@
 <?php
 
 // Define basic constants
-define('BASE_DIR', '/var/www/digidecs.stickyutrecht.nl/');
+define('BASE_DIR', '/var/www/digidecs.svsticky.nl/');
 define('TEMPLATES_DIR', BASE_DIR . 'templates/');
 
 // Define email constants

@@ -73,7 +73,8 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Vul je rekeningnummer in");
 						break;
 					case "ticket":
-						echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
+						// echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
+						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .png, .jpg en .gif bestanden mogen worden geupload");
 						break;
 					case "accept-tos":
 						echo alertMessage("Je moet alles eerst checken voordat je een declaratie kan doen.");
@@ -207,7 +208,7 @@ function alertMessage($string) {
 function handleSubmit($post, $file) {
 	// Build the message body
 	$mail_body      =
-		"Hoi Martijn,\n\n" .
+		"Hoi Yorick,\n\n" .
 
 		"Ik heb zojuist het DigiDecs formulier ingevuld. " .
 		"Dit zijn mijn gegevens.\n\n" .
