@@ -20,7 +20,6 @@ $allowed_filetypes  =
 				'jpg' => 'image/jpeg',
                 'png' => 'image/png',
                 'pdf' => 'application/pdf',
-                'pdf' => 'application/x-pdf'
         );
 
 ?>

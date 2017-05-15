@@ -74,7 +74,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						break;
 					case "ticket":
 						// echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
-						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .png, .jpg en .gif bestanden mogen worden geupload");
+						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .pdf, .png, .jpg en .gif bestanden mogen worden geupload");
 						break;
 					case "accept-tos":
 						echo alertMessage("Je moet alles eerst checken voordat je een declaratie kan doen.");
