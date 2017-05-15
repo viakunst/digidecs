@@ -62,6 +62,6 @@
 			</label>
 		</div>
 		<p>Velden met een <sup>*</sup> zijn verplicht</p>
-		<input type="submit" class="btn btn-success" value="Ik wil mijn geld terug!">
+		<input type="submit" class="btn btn-success" value="Geef geld!">
 	</form>
 </div>
