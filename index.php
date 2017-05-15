@@ -22,7 +22,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 	if ( empty($_POST) ) {
 		echo $header;
 		echo $form_header;
-		echo $form;
+		eval($form);
 		echo $footer;
 	}
 	// There is POST data, a submission has been made.
@@ -83,7 +83,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Je hebt een fout gemaakt, probeer het opnieuw.");
 				}
 			}
-			echo $form;
+			eval($form);
 			echo $footer;
 		}
 	}
@@ -134,9 +134,43 @@ function validateAll($post, $file) {
 	return $validation_status;
 }
 
+// Transnumerate A..Z in an IBAN to 10..35 (case insensitive)
+function transnumerate($input) {
+	$result = "";
+
+	foreach ($input as $char) {
+		$code = ord($char);
+
+		if ($code >= 48 && $code <= 57) { // ord('0') and ord('9')
+			$result .= $char;
+		} else { // Character
+			$code &= ~32; // Force uppercase
+			$result .= (string)$code - 55; // -65, +10 means A (65) becomes 10
+		}
+	}
+
+	return $result;
+}
+
 // Validate IBAN using regexp
 function validateIBAN($IBAN) {
-	return preg_match('/[a-zA-Z]{2}[0-9]{2}[a-zA-Z]{4}[0-9]{10}/', $IBAN);
+	// Validate layout
+	if(!preg_match('/([a-zA-Z]{2}[0-9]{2})[a-zA-Z]{4}[0-9]{10}/', $IBAN, $matches))
+		return false;
+
+	// Move country code and checksum to end
+	$transposed = $matches[2] . $matches[1];
+
+	// Transliterate into numbers, where A = 10, B = 11 .. Z = 35
+	$transliterated = transnumerate(str_split($transposed));
+
+	return bcmod($transliterated, "97") == "1"; // Magic IBAN constants
+}
+
+function refill($field) {
+	if (isset($_POST[$field]))
+		return 'value="'. $_POST[$field] . '"';
+	return "";
 }
 
 // Validate email using the built in PHP
