@@ -11,8 +11,8 @@ use Mailgun\Mailgun;
 $header      = file_get_contents(TEMPLATES_DIR . 'header.html'      );
 $footer      = file_get_contents(TEMPLATES_DIR . 'footer.html'      );
 $confirm     = file_get_contents(TEMPLATES_DIR . 'confirm.html'     );
-$form        = file_get_contents(TEMPLATES_DIR . 'form.html'        );
 $form_header = file_get_contents(TEMPLATES_DIR . 'form_header.html' );
+$form        = 					 TEMPLATES_DIR . 'form.php'          ;
 
 // Check if all templates got loaded succesfully.
 // If not throw an error.
@@ -22,7 +22,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 	if ( empty($_POST) ) {
 		echo $header;
 		echo $form_header;
-		eval($form);
+		require $form;
 		echo $footer;
 	}
 	// There is POST data, a submission has been made.
@@ -83,7 +83,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Je hebt een fout gemaakt, probeer het opnieuw.");
 				}
 			}
-			eval($form);
+			require $form;
 			echo $footer;
 		}
 	}
