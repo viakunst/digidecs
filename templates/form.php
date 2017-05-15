@@ -53,9 +53,7 @@
 
 		<div class="form-group">
 			<label for="remarks">Opmerkingen</label>
-			<textarea name="remarks" class="form-control" rows="3" type="textarea" id="remarks">
-			<?php if (isset($_POST['remarks'])) echo $_POST['remarks']; ?>
-			</textarea>
+			<textarea name="remarks" class="form-control" rows="3" type="textarea" id="remarks"><?php if (isset($_POST['remarks'])) echo $_POST['remarks']; ?></textarea>
 		</div>
 
 		<div class="form-group">
