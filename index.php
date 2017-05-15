@@ -155,7 +155,7 @@ function transnumerate($input) {
 // Validate IBAN using regexp
 function validateIBAN($IBAN) {
 	// Validate layout
-	if(!preg_match('/([a-zA-Z]{2}[0-9]{2})[a-zA-Z]{4}[0-9]{10}/', $IBAN, $matches))
+	if(!preg_match('/([a-zA-Z]{2}[0-9]{2})([a-zA-Z]{4}[0-9]{10})/', $IBAN, $matches))
 		return false;
 
 	// Move country code and checksum to end
