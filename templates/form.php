@@ -46,7 +46,7 @@
 			<label for="ticket">Bonnetje uploaden<sup>*</sup></label>
 			<input type="hidden" name="MAX_FILE_SIZE" value="10485760">
 			<input name="ticket" type="file" id="ticket" required>
-			<p class="help-block">Maximale grootte is 10MB. Alleen .pdf, .jpg, .gif en .png bestanden.</p>
+			<p class="help-block">Maximale grootte is <?php echo FILE_MAX_FILESIZE / 2 ** 20; ?>MB. Alleen .pdf, .jpg, en .png bestanden.</p>
 
                         <p class="help-block">Zorg dat de datum, het (btw) bedrag en de verschillende producten of diensten goed leesbaar zijn.</p>
 		</div>

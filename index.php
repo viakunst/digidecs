@@ -73,8 +73,8 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Ongeldig rekeningnummer.");
 						break;
 					case "ticket":
-						// echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
-						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .pdf, .png, .jpg en .gif bestanden mogen worden geupload.");
+						$maxsize = (FILE_MAX_FILESIZE / 2**20) . "MB";
+						echo alertMessage("Het bonnetje kan maximaal $maxsize groot zijn. Alleen .pdf, .png, en .jpg bestanden mogen worden geupload.");
 						break;
 					case "accept-tos":
 						echo alertMessage("Je moet alles eerst checken voordat je een declaratie kan doen.");
@@ -247,16 +247,15 @@ function alertMessage($string) {
 // with the ticket attached.
 function handleSubmit($post, $file) {
 	// Build the message body
+	$treasurer = EMAIL_FIRST_NAME;
 	$mail_body      =
-		"Hoi Yorick,\n\n" .
+		"Hoi $treasurer,\n\n" .
 
 		"Ik heb zojuist het DigiDecs formulier ingevuld. " .
 		"Dit zijn mijn gegevens.\n\n" .
 
 		"Naam: {$post['name']}\n" .
 		"Email: {$post['email']}\n" .
-		"Woonplaats: {$post['city']}\n" .
-		"Datum aankoop: {$post['date']}\n" .
 		"Totaalbedrag: {$post['totalamount']}\n" .
 		"Wat: {$post['description']}\n" .
 		"Waarvoor: {$post['purpose']}\n" .
