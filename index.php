@@ -58,23 +58,23 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Vul je naam in.");
 						break;
 					case "email":
-						echo alertMessage("Email-address niet geldig.");
+						echo alertMessage("Emailadres niet geldig.");
 						break;
 					case "totalamount":
 						echo alertMessage("Het bedrag moet een geldig cijfer zijn.");
 						break;
 					case "description":
-						echo alertMessage("Vermeld wat je gekocht hebt");
+						echo alertMessage("Vermeld wat je gekocht hebt.");
 						break;
 					case "purpose":
-						echo alertMessage("Vermeld waarvoor je het gekocht hebt");
+						echo alertMessage("Vermeld waarvoor je het gekocht hebt.");
 						break;
 					case "bank-account":
-						echo alertMessage("Vul je rekeningnummer in");
+						echo alertMessage("Ongeldig rekeningnummer.");
 						break;
 					case "ticket":
 						// echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
-						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .pdf, .png, .jpg en .gif bestanden mogen worden geupload");
+						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .pdf, .png, .jpg en .gif bestanden mogen worden geupload.");
 						break;
 					case "accept-tos":
 						echo alertMessage("Je moet alles eerst checken voordat je een declaratie kan doen.");
@@ -167,9 +167,15 @@ function validateIBAN($IBAN) {
 	return bcmod($transliterated, "97") == "1"; // Magic IBAN constants
 }
 
-function refill($field) {
-	if (isset($_POST[$field]))
-		return 'value="'. $_POST[$field] . '"';
+// Provides escaping and wrapping in value='' for values that failed validation.
+// value=''-wrapping is controlled by $attribute.
+function refill($field, $attribute=true) {
+	if (isset($_POST[$field])) {
+		$fill = htmlspecialchars($_POST[$field], ENT_QUOTES | ENT_HTML5); // Replaces ', ", <, >, &
+		if ($attribute)
+			$fill = 'value="'. $fill .'"';
+		return $fill;
+	}
 	return "";
 }
 
