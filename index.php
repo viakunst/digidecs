@@ -10,9 +10,9 @@ use Mailgun\Mailgun;
 // Load templates
 $header      = file_get_contents(TEMPLATES_DIR . 'header.html'      );
 $footer      = file_get_contents(TEMPLATES_DIR . 'footer.html'      );
-$confirm     = file_get_contents(TEMPLATES_DIR . 'confirm.html'     );
+$confirm     =                   TEMPLATES_DIR . 'confirm.php'       ;
 $form_header = file_get_contents(TEMPLATES_DIR . 'form_header.html' );
-$form        = 					 TEMPLATES_DIR . 'form.php'          ;
+$form        =                   TEMPLATES_DIR . 'form.php'          ;
 
 // Check if all templates got loaded succesfully.
 // If not throw an error.
@@ -40,7 +40,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 					== count( $validation_status ) ) {
 			handleSubmit($_POST, $_FILES['ticket']);
 			echo $header;
-			echo $confirm;
+			require $confirm;
 		}
 		else {
 			// TODO: Show the relevant errors according to the
@@ -287,15 +287,15 @@ function handleSubmit($post, $file) {
 	// through Mailgun
 	$mgClient = new Mailgun(EMAIL_API_KEY);
 	$mgClient->sendMessage(EMAIL_DOMAIN, array(
-		'from'    	=> $post['email'],
-		'to'      	=> EMAIL_TO_ADDRESS,
-		'subject' 	=> EMAIL_SUBJECT_BASE . $post['purpose'],
+			'from'    	=> $post['email'],
+			'to'      	=> EMAIL_TO_ADDRESS,
+			'subject' 	=> EMAIL_SUBJECT_BASE . $post['purpose'],
 
-		'o:tracking' 	=> false,
-                'o:tag'         => array('digidecs'),
-
-                'text'          => $mail_body
-        ), array(
-                'attachment'    => array( $file_name ))
-        );
+			'o:tracking' 	=> false,
+			'o:tag'         => array('digidecs'),
+			'text'          => $mail_body
+		),
+		array(
+			'attachment'    => array( $file_name ))
+		);
 }
