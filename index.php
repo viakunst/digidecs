@@ -10,9 +10,9 @@ use Mailgun\Mailgun;
 // Load templates
 $header      = file_get_contents(TEMPLATES_DIR . 'header.html'      );
 $footer      = file_get_contents(TEMPLATES_DIR . 'footer.html'      );
-$confirm     = file_get_contents(TEMPLATES_DIR . 'confirm.html'     );
-$form        = file_get_contents(TEMPLATES_DIR . 'form.html'        );
+$confirm     =                   TEMPLATES_DIR . 'confirm.php'       ;
 $form_header = file_get_contents(TEMPLATES_DIR . 'form_header.html' );
+$form        =                   TEMPLATES_DIR . 'form.php'          ;
 
 // Check if all templates got loaded succesfully.
 // If not throw an error.
@@ -22,7 +22,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 	if ( empty($_POST) ) {
 		echo $header;
 		echo $form_header;
-		echo $form;
+		require $form;
 		echo $footer;
 	}
 	// There is POST data, a submission has been made.
@@ -40,7 +40,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 					== count( $validation_status ) ) {
 			handleSubmit($_POST, $_FILES['ticket']);
 			echo $header;
-			echo $confirm;
+			require $confirm;
 		}
 		else {
 			// TODO: Show the relevant errors according to the
@@ -58,23 +58,23 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Vul je naam in.");
 						break;
 					case "email":
-						echo alertMessage("Email-address niet geldig.");
+						echo alertMessage("Emailadres niet geldig.");
 						break;
 					case "totalamount":
 						echo alertMessage("Het bedrag moet een geldig cijfer zijn.");
 						break;
 					case "description":
-						echo alertMessage("Vermeld wat je gekocht hebt");
+						echo alertMessage("Vermeld wat je gekocht hebt.");
 						break;
 					case "purpose":
-						echo alertMessage("Vermeld waarvoor je het gekocht hebt");
+						echo alertMessage("Vermeld waarvoor je het gekocht hebt.");
 						break;
 					case "bank-account":
-						echo alertMessage("Vul je rekeningnummer in");
+						echo alertMessage("Ongeldig rekeningnummer.");
 						break;
 					case "ticket":
-						// echo alertMessage("Het bonnetje kan maximaal 2MB groot zijn. Alleen .pdf, .jpg, .gif en .png bestanden mogen worden geupload");
-						echo alertMessage("Het bonnetje kan maximaal 10MB groot zijn. Alleen .pdf, .png, .jpg en .gif bestanden mogen worden geupload");
+						$maxsize = (FILE_MAX_FILESIZE / 2**20) . "MB";
+						echo alertMessage("Het bonnetje kan maximaal $maxsize groot zijn. Alleen .pdf, .png, en .jpg bestanden mogen worden geupload.");
 						break;
 					case "accept-tos":
 						echo alertMessage("Je moet alles eerst checken voordat je een declaratie kan doen.");
@@ -83,7 +83,7 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						echo alertMessage("Je hebt een fout gemaakt, probeer het opnieuw.");
 				}
 			}
-			echo $form;
+			require $form;
 			echo $footer;
 		}
 	}
@@ -134,9 +134,49 @@ function validateAll($post, $file) {
 	return $validation_status;
 }
 
+// Transnumerate A..Z in an IBAN to 10..35 (case insensitive)
+function transnumerate($input) {
+	$result = "";
+
+	foreach ($input as $char) {
+		$code = ord($char);
+
+		if ($code >= 48 && $code <= 57) { // ord('0') and ord('9')
+			$result .= $char;
+		} else { // Character
+			$code &= ~32; // Force uppercase
+			$result .= (string)$code - 55; // -65, +10 means A (65) becomes 10
+		}
+	}
+
+	return $result;
+}
+
 // Validate IBAN using regexp
 function validateIBAN($IBAN) {
-	return preg_match('/[a-zA-Z]{2}[0-9]{2}[a-zA-Z]{4}[0-9]{10}/', $IBAN);
+	// Validate layout
+	if(!preg_match('/([a-zA-Z]{2}[0-9]{2})([a-zA-Z]{4}[0-9]{10})/', $IBAN, $matches))
+		return false;
+
+	// Move country code and checksum to end
+	$transposed = $matches[2] . $matches[1];
+
+	// Transliterate into numbers, where A = 10, B = 11 .. Z = 35
+	$transliterated = transnumerate(str_split($transposed));
+
+	return bcmod($transliterated, "97") == "1"; // Magic IBAN constants
+}
+
+// Provides escaping and wrapping in value='' for values that failed validation.
+// value=''-wrapping is controlled by $attribute.
+function refill($field, $attribute=true) {
+	if (isset($_POST[$field])) {
+		$fill = htmlspecialchars($_POST[$field], ENT_QUOTES | ENT_HTML5); // Replaces ', ", <, >, &
+		if ($attribute)
+			$fill = 'value="'. $fill .'"';
+		return $fill;
+	}
+	return "";
 }
 
 // Validate email using the built in PHP
@@ -207,16 +247,15 @@ function alertMessage($string) {
 // with the ticket attached.
 function handleSubmit($post, $file) {
 	// Build the message body
+	$treasurer = EMAIL_FIRST_NAME;
 	$mail_body      =
-		"Hoi Yorick,\n\n" .
+		"Hoi $treasurer,\n\n" .
 
 		"Ik heb zojuist het DigiDecs formulier ingevuld. " .
 		"Dit zijn mijn gegevens.\n\n" .
 
 		"Naam: {$post['name']}\n" .
 		"Email: {$post['email']}\n" .
-		"Woonplaats: {$post['city']}\n" .
-		"Datum aankoop: {$post['date']}\n" .
 		"Totaalbedrag: {$post['totalamount']}\n" .
 		"Wat: {$post['description']}\n" .
 		"Waarvoor: {$post['purpose']}\n" .
@@ -248,15 +287,15 @@ function handleSubmit($post, $file) {
 	// through Mailgun
 	$mgClient = new Mailgun(EMAIL_API_KEY);
 	$mgClient->sendMessage(EMAIL_DOMAIN, array(
-		'from'    	=> $post['email'],
-		'to'      	=> EMAIL_TO_ADDRESS,
-		'subject' 	=> EMAIL_SUBJECT_BASE . $post['purpose'],
+			'from'    	=> $post['email'],
+			'to'      	=> EMAIL_TO_ADDRESS,
+			'subject' 	=> EMAIL_SUBJECT_BASE . $post['purpose'],
 
-		'o:tracking' 	=> false,
-                'o:tag'         => array('digidecs'),
-
-                'text'          => $mail_body
-        ), array(
-                'attachment'    => array( $file_name ))
-        );
+			'o:tracking' 	=> false,
+			'o:tag'         => array('digidecs'),
+			'text'          => $mail_body
+		),
+		array(
+			'attachment'    => array( $file_name ))
+		);
 }
