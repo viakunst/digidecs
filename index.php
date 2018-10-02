@@ -1,18 +1,17 @@
 <?php
 
 // Load configuration
-require 'config.php';
+require_once 'config.php';
 
 // Load libraries
-require 'vendor/autoload.php';
-use Mailgun\Mailgun;
+require_once 'vendor/autoload.php';
 
 // Load templates
-$header      = file_get_contents(TEMPLATES_DIR . 'header.html'      );
-$footer      = file_get_contents(TEMPLATES_DIR . 'footer.html'      );
-$confirm     =                   TEMPLATES_DIR . 'confirm.php'       ;
-$form_header = file_get_contents(TEMPLATES_DIR . 'form_header.html' );
-$form        =                   TEMPLATES_DIR . 'form.php'          ;
+$header      = file_get_contents('./templates/header.html'      );
+$footer      = file_get_contents('./templates/footer.html'      );
+$confirm     =                   './templates/confirm.php'       ;
+$form_header = file_get_contents('./templates/form_header.html' );
+$form        =                   './templates/form.php'          ;
 
 // Check if all templates got loaded succesfully.
 // If not throw an error.
@@ -38,7 +37,9 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 		// If yes; the submit is succesul.
 		if ( count( array_keys($validation_status, true) )
 					== count( $validation_status ) ) {
-			handleSubmit($_POST, $_FILES['ticket']);
+			$destination = $recipients[$_POST['recipient']];
+
+			handleSubmit($destination, $_POST, $_FILES['ticket']);
 			echo $header;
 			require $confirm;
 		}
@@ -68,6 +69,9 @@ if ( $header && $footer && $form && $confirm &&$form_header ) {
 						break;
 					case "purpose":
 						echo alertMessage("Vermeld waarvoor je het gekocht hebt.");
+						break;
+					case "recipient":
+						echo alertMessage("Vermeld voor welke commissie de declaratie bestemd is");
 						break;
 					case "bank-account":
 						echo alertMessage("Ongeldig rekeningnummer.");
@@ -109,6 +113,7 @@ function validateAll($post, $file) {
 		"totalamount"  => false,
 		"description"  => false,
 		"purpose"      => false,
+		"recipient"    => false,
 		"bank-account" => false,
 		"remarks"      => true,
 		"ticket"       => false,
@@ -127,6 +132,7 @@ function validateAll($post, $file) {
 	$validation_status['name']         = !empty($post['name']            );
 	$validation_status['description']  = !empty($post['description']     );
 	$validation_status['purpose']      = !empty($post['purpose']         );
+	$validation_status['recipient']    = !empty($post['recipient']       );
 	$validation_status['bank-account'] = validateIBAN($post['bank-account']);
 	$validation_status['ticket']       = validateTicket($file);
 	$validation_status['accept-tos']   = $post['accept-tos'];
@@ -245,9 +251,9 @@ function alertMessage($string) {
 // Logic to handle a successfull submit.
 // An email get's send to the treasurer
 // with the ticket attached.
-function handleSubmit($post, $file) {
+function handleSubmit($destination, $post, $file) {
 	// Build the message body
-	$treasurer = EMAIL_FIRST_NAME;
+	$treasurer = $destination['firstname'];
 	$mail_body      =
 		"Hoi $treasurer,\n\n" .
 
@@ -266,7 +272,7 @@ function handleSubmit($post, $file) {
 
 		"{$post['name']}";
 
-	// Rename the file
+		// Rename the file
         global $allowed_filetypes;
 
         // Check the mime type from the file itself
@@ -282,20 +288,28 @@ function handleSubmit($post, $file) {
 	$file_name = $file['tmp_name'] . '.' . $extension;
 	rename( $file['tmp_name'], $file_name );
 
-	// Create new Mailgun mailer instance and
-	// configure the class for sending
-	// through Mailgun
-	$mgClient = new Mailgun(EMAIL_API_KEY);
-	$mgClient->sendMessage(EMAIL_DOMAIN, array(
-			'from'    	=> $post['email'],
-			'to'      	=> EMAIL_TO_ADDRESS,
-			'subject' 	=> EMAIL_SUBJECT_BASE . $post['purpose'],
+	// Create new Swiftmailer instance and configure msg
+	// Create the Transport
+	$transport = (new Swift_SmtpTransport(EMAIL_SMTP_SERVER, EMAIL_SMTP_PORT))
+		->setUsername(EMAIL_SMTP_USERNAME)
+		->setPassword(EMAIL_SMTP_PASSWORD)
+	;
 
-			'o:tracking' 	=> false,
-			'o:tag'         => array('digidecs'),
-			'text'          => $mail_body
-		),
-		array(
-			'attachment'    => array( $file_name ))
-		);
+	// Create the Mailer using your created Transport
+	$mailer = new Swift_Mailer($transport);
+
+	// Create a message
+	$message = (new Swift_Message())
+		->setFrom([$post['email']])
+		->setTo([$destination['mail'] => $destination['name']])
+		->setSubject(EMAIL_SUBJECT_BASE . $post['purpose'])
+		->setBody($mail_body)
+	;
+
+	$message->attach(
+		Swift_Attachment::fromPath($file_name)->setFilename($file_name)
+	);
+
+	// Send the message
+	$result = $mailer->send($message);
 }

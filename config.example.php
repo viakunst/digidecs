@@ -1,26 +1,37 @@
 <?php
 
-// Define basic constants
-define('BASE_DIR', '/var/www/digidecs.svsticky.nl/');
-define('TEMPLATES_DIR', BASE_DIR . 'templates/');
-
 // Define email constants
-define('EMAIL_TO_ADDRESS', 'addressee@something.org');
-define('EMAIL_TO_NAME', 'R. ecipient');
-define('EMAIL_SUBJECT_BASE', 'Receipt:');
-define('EMAIL_FIRST_NAME', 'Roderick');
+define('EMAIL_SUBJECT_BASE', 'Declaratie ingediend:');
 
-// Mailgun settings
-define('EMAIL_API_KEY', '');
-define('EMAIL_DOMAIN', 'something.org');
+// SMTP settings
+define('EMAIL_SMTP_SERVER', 'mail.viakunst-utrecht.nl');
+define('EMAIL_SMTP_PORT', 25);
+define('EMAIL_SMTP_USERNAME', '');
+define('EMAIL_SMTP_PASSWORD', '');
 
 // Define upload restrictions
 define('FILE_MAX_FILESIZE', 20971520); // 20 MiB
 $allowed_filetypes  =
         array(
-				'jpg' => 'image/jpeg',
+                'jpg' => 'image/jpeg',
                 'png' => 'image/png',
                 'pdf' => 'application/pdf',
+        );
+
+$recipients =
+        array(
+                'aco' => array(
+                        'label'     => 'Activiteitencommissie',
+                        'mail'      => 'activiteitencommissie@viakunst-utrecht.nl',
+                        'name'      => 'Activiteitencommisie',
+                        'firstname' => 'aco'
+                ),
+                'other' => array(
+                        'label'     => 'Overig (Bestuur)',
+                        'mail'      => 'penningmeester@viakunst-utrecht.nl',
+                        'name'      => 'Penningmeester',
+                        'firstname' => 'penningmeester'
+                )
         );
 
 ?>

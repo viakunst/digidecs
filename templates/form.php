@@ -15,7 +15,7 @@
 
 		<div class="form-group">
 			<label for="email">E-mailadres<sup>*</sup></label>
-			<input type="email" class="form-control" id="email" name="email" placeholder="gigantischebaas@svsticky.nl"
+			<input type="email" class="form-control" id="email" name="email" placeholder="gigantischebaas@viakunst-utrecht.nl"
 			<?php echo refill("email"); ?>
 			required>
 		</div>
@@ -37,9 +37,16 @@
 		</div>
 
 		<div class="form-group">
-			<label for="purpose">Waarvoor/welke commissie?<sup>*</sup></label>
+			<label for="purpose">Waarvoor?<sup>*</sup></label>
 			<input id="purpose" name="purpose" type="text" class="form-control" placeholder="Bestuur, lul!"
 			<?php echo refill("purpose"); ?> required>
+		</div>
+
+		<div class="form-group">
+			<label for="recipient">Welke commissie<sup>*</sup></label><br>
+			<?php foreach ($recipients as $value => $data) {?>
+			<input id="recipient" name="recipient"  type="radio" value="<?php echo $value; ?>"> <?php echo $data["label"]; ?><br>
+			<?php } ?>
 		</div>
 
 		<div class="form-group">
